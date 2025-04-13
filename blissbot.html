@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlissBot</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .blissbot-response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>BlissBot</h1>
+        <p>Your personalized chat companion</p>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#blissbot-modal">
+            Talk to BlissBot
+        </button>
+    </div>
+
+    <div class="modal fade" id="blissbot-modal" tabindex="-1" aria-labelledby="blissbot-modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="blissbot-modal-label">BlissBot</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="user-input" placeholder="Type your message here..." rows="5" cols="50"></textarea>
+                    <button type="button" class="btn btn-primary" id="send-button">Send</button>
+                    <div id="blissbot-response" class="blissbot-response"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const responses = {
+            familyLeaving: [
+                "I know it would be hard to stay away from your siblings, but they will be back for holidays in no time.",
+                "It's tough to see family members leave, but technology can help you stay connected. Make sure to schedule regular video calls!",
+                "Even though it's hard to say goodbye, you can always look forward to the next time you'll see each other.",
+            ],
+            sad: [
+                "I'm so sorry to hear that you're feeling sad. Would you like to talk about what's bothering you?",
+                "It sounds like something is causing you pain. Is there something specific that's on your mind?",
+                "I can sense your sadness. Is there anything I can do to help you feel better?",
+                "You seem really upset. Would you like to talk about what's going on?",
+                "I'm here to listen if you want to talk about how you're feeling.",
+            ],
+            happy: [
+                "That's wonderful to hear! What's making you happy today?",
+                "I'm glad you're feeling happy. What's your favorite thing about it?",
+                "You seem really excited. Tell me more about it!",
+                "I can sense your happiness. What do you think is the best part about it?",
+                "It's great to see you're enjoying yourself. What do you like to do when you're feeling happy?",
+            ],
+            failedTest: [
+                "Don't worry, failing a test isn't the end of the world. You can always learn from your mistakes and try again.",
+                "It's okay to make mistakes. What's important is that you learn from them and use them as an opportunity to grow.",
+                "Failing a test can be tough, but it's not a reflection of your worth as a person. You are capable of bouncing back and trying again.",
+                "Remember that everyone fails sometimes. It's how you respond to those failures that matters. Keep pushing forward and you'll get there!",
+                "It's okay to feel disappointed, but don't give up. You can always try again and do better next time.",
+            ],
+            lowMarks: [
+                "Don't be too hard on yourself. Low marks don't define your worth as a person. You can always improve and work harder next time.",
+                "It's not about being perfect, it's about learning and improving. What can you do differently next time to get better marks?",
+                "Low marks can be a wake-up call to work harder and do better. Use this as an opportunity to learn and grow.",
+                "Remember that marks aren't everything. What's important is that you're learning and growing as a person.",
+                "It's okay to struggle sometimes. What's important is that you don't give up and keep pushing forward.",
+            ],
+        };
+
+        const sentimentDetection = (message) => {
+            const emotions = {
+                familyLeaving: ["sister", "brother", "leaving", "moving", "home"],
+                sad: ["sad", "bad", "awful", "terrible", "hate", "angry", "cry"],
+                happy: ["happy", "great", "good", "excellent", "love", "joy", "smile"],
+                failedTest: ["failed", "test", "exam", "didn't pass"],
+                lowMarks: ["low marks", "bad grade", "didn't do well"],
+            };
+
+            let detectedEmotion = null;
+            let maxMatch = 0;
+
+            for (const emotion in emotions) {
+                let match = 0;
+                const words = message.toLowerCase().split(" ");
+                words.forEach((word) => {
+                    if (emotions[emotion].includes(word)) match++;
+                });
+
+                if (match > maxMatch) {
+                    maxMatch = match;
+                    detectedEmotion = emotion;
+                }
+            }
+
+            return detectedEmotion;
+        };
+
+        const blissbotResponse = (message) => {
+            if (!message) return "Please enter a message to get started.";
+
+            const detectedEmotion = sentimentDetection(message);
+
+            const responseList = responses[detectedEmotion] || responses["sad"];
+            const response = responseList[Math.floor(Math.random() * responseList.length)];
+
+            return response;
+        };
+
+        document.getElementById("send-button").addEventListener("click", () => {
+            const userInput = document.getElementById("user-input").value.trim();
+            const response = blissbotResponse(userInput);
+            document.getElementById("blissbot-response").innerText = response;
+            document.getElementById("user-input").value = "";
+        });
+    </script>
+</body>
+</html>
